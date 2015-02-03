@@ -4,11 +4,11 @@ body{
 
 }
 
-#screen{
-	margin: auto;
-	position : relative;
-	top: 0px;
-	left : 10%;
+#screenJeuDeLaVie{
+	position: relative;
+	margin : auto;
+	top : 0px;
+	left : 0px;
 }
 
 .cell{
@@ -16,6 +16,7 @@ body{
 	top: 0px;
 	left: 0px;
 	border:  solid 1px black;
+	background-color: white;
 }
 
 .black{

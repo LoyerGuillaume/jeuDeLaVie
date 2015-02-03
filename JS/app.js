@@ -1,27 +1,78 @@
 
-var GRID_WIDTH = 100;
-var GRID_HEIGHT = 50;
+var GRID_WIDTH = 55;
+var GRID_HEIGHT = 30;
 
-var CELL_WIDTH = 20;
-var CELL_HEIGHT = 20;
+var CELL_WIDTH = 15;
+var CELL_HEIGHT = 15;
+
+var play = false;
+var delayPlay = 50;
 
 var grid = [];
 
 $(init);
 
 function init(){
-
+	$("#screenJeuDeLaVie").css("height", GRID_HEIGHT * CELL_HEIGHT + "px").css("width", GRID_WIDTH * CELL_WIDTH + "px");
 	createGrid();
 
 	cellListener();
+	buttonListeners()
+	
+}
 
+function buttonListeners(){
+/*	$("#oneEtape").click(function(event){
+		gameOn();
+	});
+	$("body").on("click","#play", function(event){
+		play = true;
+		setTimeout(playGame, delayPlay);
+		$("#play").html("Stop");
+		$("#play").attr("id", "stop");
+	});
+	$("body").on("click","#stop", function(event){
+		play = false;
+		$("#stop").html("Play");
+		$("#stop").attr("id", "play");
+	});
+	$("body").on("click","#reset", function(event){
+		resetGrid();
+		setReinitData();
+	});
+
+	$("#star").click(function(event){
+		resetGrid()
+		setReinitData();
+		setForm(star, "mid");
+	});
+
+	$("#canon").click(function(event){
+		resetGrid()
+		setReinitData();
+		setForm(canon, "top");
+	});*/
+
+	
 	$("body").keydown(function(event){
-		/*console.log(event.which);*/
+		console.log(event.which);
 		if(event.which == 32){
-			gameOn();
+			if(!play){
+				play = true;
+				setTimeout(playGame, delayPlay);
+			} else{
+				play = false;
+			}
 		}
 	})
 
+}
+
+function playGame(){
+	if(play){
+		gameOn();
+		setTimeout(playGame, delayPlay);
+	}
 }
 
 
@@ -35,7 +86,7 @@ function createGrid(){
 			lCell.data("y", y);
 			lCell.data("test", false);
 			lCell.data("isBlack", false);
-			$("#screen").append(lCell);
+			$("#screenJeuDeLaVie").append(lCell);
 			line.push(lCell);
 
 		}
@@ -45,14 +96,23 @@ function createGrid(){
 
 function cellListener(){
 	$(".cell").click(function(){
-		$(this).addClass("black");
-		$(this).data("isBlack", true);
+		if($(this).hasClass("black"))
+		{
+			$(this).removeClass("black");
+			$(this).data("isBlack", false);	
+		}
+		else
+		{
+			$(this).addClass("black");
+			$(this).data("isBlack", true);
+		}
 		/*grid[$(this).data("y"),$(this).data("x")] = 1;*/
 	})	
 }
 
 function gameOn(){
 	var lCells = $(".black");
+	setReinitData();
 
 	$(".cell").each(function(){
 		var x = $(this).data("x");
@@ -61,7 +121,6 @@ function gameOn(){
 		setAroundBlack(x,y);
 
 	});
-	setReinitData();
 /*	setIsBlackTrue();
 	setTestFalse();*/
 }
@@ -69,7 +128,7 @@ function gameOn(){
 function setAroundBlack(x, y){
 
 
-    if(!grid[y][x].hasClass("black")){
+    if(!grid[y][x].data("isBlack")){
     	return;
     }
 
@@ -78,6 +137,7 @@ function setAroundBlack(x, y){
     setBlack(x+1,y-1);
 
     setBlack(x-1,y  );
+    setBlack(x ,y  );
     setBlack(x+1,y  );
 
     setBlack(x-1,y+1);
@@ -187,4 +247,40 @@ function setReinitData(){
 		$(this).data("test", false);
 
 	});
+};
+
+function resetGrid(){
+	$(".cell").each(function(){
+		if($(this).hasClass("black")){
+			$(this).removeClass("black");
+		}
+
+	});
+
+}
+
+function setForm(gridForm, position){
+	if(position == "mid"){
+		var midY = Math.floor(GRID_HEIGHT/2) - Math.floor(gridForm.length/2);
+	}
+	else{
+		var midY = 0;
+	}
+
+	for(var i = 0; i < gridForm.length ; i++){
+
+		if(position == "mid"){
+			var midX = Math.floor(GRID_WIDTH/2) - Math.floor(gridForm[i].length/2);
+		}
+		else{
+			var midX = 0;
+		}
+		for(var j = 0; j< gridForm[i].length ; j++){
+			if(gridForm[i][j] == 1){
+				$(grid[i+midY][j+midX]).data("isBlack", true);
+				$(grid[i+midY][j+midX]).addClass("black");
+			}
+
+		}
+	}
 }
